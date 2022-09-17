@@ -30,7 +30,7 @@ gameData = {
     'sprite_center_x': width / 2 - 64 / 2,
     'sprite_center_y': height / 2 - 64 / 2,
     'com_reduce': 0.3,
-    'vol': 2,
+    'vel': 2,
     'coins': 0,
     'points': 0
 }
@@ -985,22 +985,22 @@ def GameMain():
 
     running = True
     coins = []
-    for x in range(100):
+    for x in range(5000):
         amount = randrange(1, 6)
         coin = Coin(randrange(64, width - 64), randrange(64, height - 64), amount)
         coins.append(coin)
     shoes = []
-    for x in range(10):
+    for x in range(25):
         shoe = Shoe(randrange(64, width - 64), randrange(64, height - 64))
         shoes.append(shoe)
     gems = []
-    for x in range(10):
+    for x in range(25):
         gem = Gem(randrange(64, width - 64), randrange(64, height - 64))
         gems.append(gem)
     enemies = []
-    for x in range(3):
-        enemy = Enemy(randrange(64, width - 64), randrange(64, height - 64))
-        enemies.append(enemy)
+#    for x in range(3):
+#        enemy = Enemy(randrange(64, width - 64), randrange(64, height - 64))
+#        enemies.append(enemy)
     walking = False
     indexMem = [0, 0]
     while running:
@@ -1025,7 +1025,7 @@ def GameMain():
                         player.load_sprite('walk')
                         player.index = indexMem[0]
         keys = pygame.key.get_pressed()
-        val = calc_vect(keys, (gameData['com_reduce'], gameData['vol']))
+        val = calc_vect(keys, (gameData['com_reduce'], gameData['vel']))
         player.pos((player.x + val[0], player.y + val[1]))
         if val[2] != '':
             player.change_facing(val[2])
@@ -1036,7 +1036,7 @@ def GameMain():
                 player.index = indexMem[0]
                 player.animate()
             walking = True
-        elif walking is True and val[3] is not False:
+        elif walking and not val[3]:
             walking = False
         else:
             pass
@@ -1058,15 +1058,15 @@ def GameMain():
                 gameData['coins'] += coin.amount
                 coins.insert(index, newcoin)
         for shoe in shoes:
-            if shoe.x - 48 < player.x < shoe.x + 16 and shoe.y - 48 < player.y < shoe.y + 16:
+            if shoe.x + 16 > player.x > shoe.x-48 and shoe.y - 48 < player.y < shoe.y:
                 index = shoes.index(shoe)
                 newshoe = Shoe(randrange(64, width - 64), randrange(64, height - 64))
                 shoes.pop(index)
-                gameData['vol'] *= shoe.inc
-                gameData['vol'] = float(round(gameData['vol'], 2))
+                gameData['vel'] *= shoe.inc
+                gameData['vel'] = float(round(gameData['vel'], 2))
                 shoes.insert(index, newshoe)
         for gem in gems:
-            if gem.x + 16 > player.x > gem.x - 48 < player.y < gem.y + 16:
+            if gem.x + 16 > player.x > gem.x - 48 and gem.y - 48 < player.y < gem.y + 16:
                 index = gems.index(gem)
                 newgem = Gem(randrange(64, width - 64), randrange(64, height - 64))
                 gems.pop(index)
@@ -1116,7 +1116,7 @@ def GameMain():
         if player.sprite_name == 'slash' and frames % 30 == 0:
             player.animate()
             indexMem[1] = player.index
-        elif player.sprite_name == 'walk' and walking is True and frames % 4 == 0:
+        elif player.sprite_name == 'walk' and walking and frames % 4 == 0:
             player.animate()
             indexMem[0] = player.index
 
@@ -1132,7 +1132,7 @@ def GameMain():
         display.blit(player.sprite, (player.x, player.y))
 
         coinmsg = "Coins: {cc} coins".format(cc=gameData['coins'])
-        velmsg = "Velocity: {vol}".format(vol=gameData['vol'])
+        velmsg = "Velocity: {vol}".format(vol=gameData['vel'])
         pointmsg = "Points: {points}".format(points=gameData['points'])
         messageFont = pygame.font.SysFont('Sans Serif', 32)
         coinSurf = messageFont.render(coinmsg, True, (255, 255, 255), (0, 0, 0, 0.3))
