@@ -1,3 +1,4 @@
+import math
 import pygame
 import sys
 import os
@@ -29,8 +30,8 @@ gameData = {
     'sprite_size': 64,
     'sprite_center_x': width / 2 - 64 / 2,
     'sprite_center_y': height / 2 - 64 / 2,
-    'com_reduct': 0,
-    'vol': 2,
+    'com_reduct': 0.3,
+    'vol': 1,
     'coins': 0
 }
 
@@ -62,18 +63,6 @@ class spritesheet(object):
                 colorkey = image.get_at((0, 0))
             image.set_colorkey(colorkey, pygame.RLEACCEL)
         return image
-    # Load a whole bunch of images and return them as a list
-
-    def images_at(self, rects, colorkey=None):
-        "Loads multiple images, supply a list of coordinates"
-        return [self.image_at(rect, colorkey) for rect in rects]
-    # Load a whole strip of images
-
-    def load_strip(self, rect, image_count, colorkey=None):
-        "Loads a strip of images and returns them as a list"
-        tups = [(rect[1]+rect[2]*x, rect[0], rect[2], rect[3])
-                for x in range(image_count)]
-        return self.images_at(tups, colorkey)
 
 ss = spritesheet('./media/images/entity/sprites.png')
 
@@ -560,6 +549,12 @@ class Coin(GameObj):
         sprite = items['coin'][('c{}_4').format(ammount)]
         super().__init__(x, y, sprite)
 
+class Shoe(GameObj):
+    def __init__(self, x, y):
+        self.id = randrange(1,6)
+        self.inc = (self.id/100) + 1
+        super().__init__(x, y, items['shoe'][("s_{}").format(self.id)])
+
 class Player(object):
     def __init__(self, x=0, y=0, facing='front', sprite='walk', index=0):
         self.x = x
@@ -661,6 +656,10 @@ def GameMain():
         ammount = randrange(1,6)
         coin = Coin(randrange(64,width-64),randrange(64,height-64),ammount)
         coins.append(coin)
+    shoes = []
+    for x in range(10):
+        shoe = Shoe(randrange(64,width-64),randrange(64,height-64))
+        shoes.append(shoe)
     while running:
         display.fill(colors['black'])
         for event in pygame.event.get():
@@ -717,19 +716,34 @@ def GameMain():
                 coins.pop(index)
                 gameData['coins'] += coin.ammount
                 coins.insert(index,newcoin)
+        for shoe in shoes:
+            if (player.x > shoe.x - 48 and player.x < shoe.x + 16 and player.y > shoe.y - 48 and player.y < shoe.y + 16):
+                index = shoes.index(shoe)
+                newshoe = Shoe(randrange(64,width-64),randrange(64,height-64))
+                shoes.pop(index)
+                gameData['vol'] *= shoe.inc
+                gameData['vol'] = float(round(gameData['vol'],2))
+                shoes.insert(index,newshoe)
 
         display.blit(floor, (0, 0))
         display.blit(player.sprite, (player.x, player.y))
         for x in coins:
             display.blit(x.sprite,(x.x,x.y))
-        message = "Coins: {} coins".format(gameData['coins'])
+        for x in shoes:
+            display.blit(x.sprite,(x.x,x.y))
+        coinmsg = "Coins: {cc} coins".format(cc=gameData['coins'])
+        volmsg = "Volocity: {vol}".format(vol=gameData['vol'])
         messageFont = pygame.font.SysFont('Sans Serif', 32)
-        messageSurf = messageFont.render(message, True, (255, 255, 255),(0,0,0,0.3))
-        messageRect = messageSurf.get_rect()
-        messageRect.center = (100, 50)
-        display.blit(messageSurf, messageRect)
+        coinSurf = messageFont.render(coinmsg, True, (255, 255, 255),(0,0,0,0.3))
+        coinRect = coinSurf.get_rect()
+        volSurf = messageFont.render(volmsg, True, (255, 255, 255),(0,0,0,0.3))
+        volRect = volSurf.get_rect()
+        coinRect.center = (100, 50)
+        volRect.center = (100, 100)
+        display.blit(coinSurf, coinRect)
+        display.blit(volSurf, volRect)
         pygame.display.update()
-        clock.tick(60)
+        clock.tick(120)
 
 
 def main():
@@ -762,7 +776,7 @@ def main():
         display.blit(titleSurf, titleRect)
         display.blit(messageSurf, messageRect)
         pygame.display.update()
-        clock.tick(30)
+        clock.tick(20)
 
 
 main()
