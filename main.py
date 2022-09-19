@@ -973,7 +973,7 @@ def GameMain():
     pAtkCooldownTimer = 0
     frames = 0
     floor = Spritesheet(
-        '../Python Game/img/background/floor.jpg').image_at((0, 0, 1024, 1024))
+        './media/images/bg/floor.jpg').image_at((0, 0, 1024, 1024))
     floor = pygame.transform.scale(floor, (width, height))
 
     player = Player(gameData['sprite_center_x'],
@@ -985,7 +985,7 @@ def GameMain():
 
     running = True
     coins = []
-    for x in range(5000):
+    for x in range(500):
         amount = randrange(1, 6)
         coin = Coin(randrange(64, width - 64), randrange(64, height - 64), amount)
         coins.append(coin)
@@ -998,9 +998,9 @@ def GameMain():
         gem = Gem(randrange(64, width - 64), randrange(64, height - 64))
         gems.append(gem)
     enemies = []
-#    for x in range(3):
-#        enemy = Enemy(randrange(64, width - 64), randrange(64, height - 64))
-#        enemies.append(enemy)
+    for x in range(3):
+        enemy = Enemy(randrange(64, width - 64), randrange(64, height - 64))
+        enemies.append(enemy)
     walking = False
     indexMem = [0, 0]
     while running:
