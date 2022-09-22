@@ -1,0 +1,18 @@
+* @GPU-Killers/admin
+*.py @GPU-Killers/py-devs @GPU-Killers/admin
+*.pyc @GPU-Killers/py-devs @GPU-Killers/admin
+*.pyo @GPU-Killers/py-devs @GPU-Killers/admin
+*.pyd @GPU-Killers/py-devs @GPU-Killers/admin
+*.pyw @GPU-Killers/py-devs @GPU-Killers/admin
+*.pyz @GPU-Killers/py-devs @GPU-Killers/admin
+*.py3 @GPU-Killers/py-devs @GPU-Killers/admin
+*.py3c @GPU-Killers/py-devs @GPU-Killers/admin
+*.py3o @GPU-Killers/py-devs @GPU-Killers/admin
+*.py3d @GPU-Killers/py-devs @GPU-Killers/admin
+*.py3w @GPU-Killers/py-devs @GPU-Killers/admin
+*.py3z @GPU-Killers/py-devs @GPU-Killers/admin
+*.pyi @GPU-Killers/py-devs @GPU-Killers/admin
+*.pyt @GPU-Killers/py-devs @GPU-Killers/admin
+*.pyv @GPU-Killers/py-devs @GPU-Killers/admin
+.github/ @GPU-Killers/admin
+CODEOWNERS @GPU-Killers/admin
