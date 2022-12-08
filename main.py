@@ -1,5 +1,6 @@
 import pygame
 import sys
+import sentry_sdk
 from random import *
 from pygame import K_ESCAPE as esc
 from pygame import K_LSHIFT as lshift
@@ -9,13 +10,11 @@ from pygame import K_RSHIFT as rshift
 from keymgr import *
 from textmod import *
 
-
 class GameObj:
     def __init__(self, x, y, sprite):
         self.x = x
         self.y = y
         self.sprite = sprite
-
 
 pygame.init()
 display = pygame.display.set_mode((0, 0), pygame.RESIZABLE)
@@ -43,7 +42,6 @@ colors = {
     "black": (0, 0, 0)
 }
 
-
 class Spritesheet(object):
     def __init__(self, filename):
         try:
@@ -63,7 +61,6 @@ class Spritesheet(object):
                 colorkey = image.get_at((0, 0))
             image.set_colorkey(colorkey, pygame.RLEACCEL)
         return image
-
 
 ss = Spritesheet('./media/images/entity/sprites.png')
 
@@ -798,20 +795,17 @@ items = {
     "log": iss.image_at((672, 416, 32, 32))
 }
 
-
 class Coin(GameObj):
     def __init__(self, x, y, amount):
         self.amount = amount
         sprite = items['coin']['c{}_4'.format(amount)]
         super().__init__(x, y, sprite)
 
-
 class Shoe(GameObj):
     def __init__(self, x, y):
         self.id = randrange(1, 6)
         self.inc = (self.id / 100) + 1
         super().__init__(x, y, items['shoe']['s_{}'.format(self.id)])
-
 
 class Gem(GameObj):
     def __init__(self, x, y):
@@ -822,7 +816,6 @@ class Gem(GameObj):
         else:
             self.selector = 'g_{}'.format(self.id)
         super().__init__(x, y, items[self.type][self.selector])
-
 
 class Player(object):
     def __init__(self, x=0, y=0, facing='front', sprite='walk', index=0):
@@ -933,7 +926,6 @@ class Player(object):
         currentDamage = damage - defenceAmount
         return currentDamage
 
-
 class Enemy(GameObj):
     def __init__(self, x, y):
         super().__init__(x, y, items['skull']['s_1'])
@@ -944,7 +936,6 @@ class Enemy(GameObj):
 
     def receiveDamage(self, damage):
         self.health -= damage
-
 
 def pause():
     display.fill((0, 0, 0))
@@ -966,7 +957,6 @@ def pause():
             return False
         if keys[pygame.K_h]:
             return True
-
 
 def GameMain():
     pAtkCooldown = False
@@ -1153,7 +1143,6 @@ def GameMain():
         pygame.display.update()
         clock.tick(60)
 
-
 def main():
     titleText = 'Welcome to the game'
     titleFont = pygame.font.SysFont('Sans Serif', 75)
@@ -1186,5 +1175,16 @@ def main():
         pygame.display.update()
         clock.tick(20)
 
+sentry_sdk.init(
+    dsn= "https://d67b7c9b633e48a2a7993fc41534c936@o1236511.ingest.sentry.io/4504202970136576",
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for performance monitoring.
+    # We recommend adjusting this value in production.
+    traces_sample_rate= 1.0,
+    _experiments= {
+        "profiles_sample_rate": 1.0
+    },
+    auto_enabling_integrations= True
+)
 
 main()
